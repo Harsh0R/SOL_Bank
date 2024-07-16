@@ -33,14 +33,13 @@ const contractFuncs = () => {
     );
     return provider;
   };
-  const bankKeyPair = anchor.web3.Keypair.generate();
+  // const bankKeyPair = anchor.web3.Keypair.generate();
 
   useEffect(() => {
     const provider = getProvider();
     const program = new anchor.Program(BANK_IDL, BANK_PROGRAM_PUBKEY, provider);
     setProgram(program);
-    console.log("program ===>> ", program);
-
+    // console.log("program ===>> ", program);
     return () => {};
   }, []);
 
@@ -57,9 +56,7 @@ const contractFuncs = () => {
           [utf8.encode("bankaccount"), publicKey.toBuffer()],
           program.programId
         );
-
         // console.log("Bank Account address ==---== >> ", profilePda);
-   
         const tx = await program.rpc.create(name, {
           accounts: {
             bank: profilePda,
@@ -75,37 +72,8 @@ const contractFuncs = () => {
     }
   };
 
-  const withdrawAmountToBank = async (amount) => {
-
-    console.log("Amount to deposit ==> ", amount);
-
-    const provider = getProvider();
-    if (program && amount && provider) {
-      const [profilePda, profileBump] = await findProgramAddressSync(
-        [utf8.encode("bankaccount"), publicKey.toBuffer()],
-        program.programId
-      );
-      console.log("Bank Account address ==---== >> ", profilePda);
-      const amount1 = new anchor.BN(amount*10**9)
-      try {
-        const tx = await program.rpc.withdraw(amount1, {
-          accounts: {
-            bank: profilePda,
-            user: provider.wallet.publicKey,
-            systemProgram: SystemProgram.programId,
-          },
-        });
-        console.log("Deposit to Bank ==> " , tx);
-      } catch (error) {
-        console.log("Error in deposit Amount to bank ===>> " , error);
-      }
-    }
-  };
-
   const depositAmountToBank = async (amount) => {
-
-    console.log("Amount to deposit ==> ", amount);
-
+    // console.log("Amount to deposit ==> ", amount);
     const provider = getProvider();
     if (program && amount && provider) {
       const [profilePda, profileBump] = await findProgramAddressSync(
@@ -113,7 +81,7 @@ const contractFuncs = () => {
         program.programId
       );
       console.log("Bank Account address ==---== >> ", profilePda);
-      const amount1 = new anchor.BN(amount*10**9)
+      const amount1 = new anchor.BN(amount * 10 ** 9);
       try {
         const tx = await program.rpc.deposit(amount1, {
           accounts: {
@@ -122,37 +90,62 @@ const contractFuncs = () => {
             systemProgram: SystemProgram.programId,
           },
         });
-        console.log("Deposit to Bank ==> " , tx);
+        console.log("Deposit to Bank ==> ", tx);
       } catch (error) {
-        console.log("Error in deposit Amount to bank ===>> " , error);
+        console.log("Error in deposit Amount to bank ===>> ", error);
       }
     }
   };
 
+  const withdrawAmountFromBank = async (amount) => {
+    // console.log("Amount to deposit ==> ", amount);
+    const provider = getProvider();
+    if (program && amount && provider) {
+      const [profilePda, profileBump] = await findProgramAddressSync(
+        [utf8.encode("bankaccount"), publicKey.toBuffer()],
+        program.programId
+      );
+      console.log("Bank Account address ==---== >> ", profilePda);
+      const amount1 = new anchor.BN(amount * 10 ** 9);
+      try {
+        const tx = await program.rpc.withdraw(amount1, {
+          accounts: {
+            bank: profilePda,
+            user: provider.wallet.publicKey,
+            systemProgram: SystemProgram.programId,
+          },
+        });
+        console.log("Withdraw From Bank ==> ", tx);
+      } catch (error) {
+        console.log("Error in deposit Amount to bank ===>> ", error);
+      }
+    }
+  };
 
-  
-const fetchBankData =async () => {
+  const fetchBankData = async () => {
+    const [profilePda, profileBump] = await findProgramAddressSync(
+      [utf8.encode("bankaccount"), publicKey.toBuffer()],
+      program.programId
+    );
 
-  const [profilePda, profileBump] = await findProgramAddressSync(
-    [utf8.encode("bankaccount"), publicKey.toBuffer()],
-    program.programId
-  );
+    const account_data = await program.account.bank.fetch(profilePda);
+    // console.log("account Data  ==  >?>> ", (account_data.balance).toString());
+    // console.log("account Data  ==  >?>> ", account_data.name);
+    // console.log("account Data  ==  >?>> ", new PublicKey(account_data.owner).toString());
 
-  const account_data = await program.account.bank.fetch(profilePda);
-  // console.log("account Data  ==  >?>> ", (account_data.balance).toString());
-  // console.log("account Data  ==  >?>> ", account_data.name);
-  // console.log("account Data  ==  >?>> ", new PublicKey(account_data.owner).toString());
+    const balance = account_data.balance.toString();
+    const name = account_data.name;
+    const owner = account_data.owner.toString();
+    return { balance, name, owner };
+  };
 
-  const balance = (account_data.balance).toString();
-  const name = account_data.name
-  const owner = (account_data.owner).toString()
-  return {balance , name , owner}
-
-}
-
-
-
-  return { program, createBank , depositAmountToBank , fetchBankData , withdrawAmountToBank };
+  return {
+    program,
+    createBank,
+    depositAmountToBank,
+    fetchBankData,
+    withdrawAmountFromBank,
+  };
 };
 
 export default contractFuncs;

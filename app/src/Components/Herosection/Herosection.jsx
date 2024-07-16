@@ -11,7 +11,7 @@ const Herosection = () => {
     const [Name, setName] = useState("")
     const [owner, setOwner] = useState("")
     const [flag, setFlag] = useState(false)
-    const { program, createBank, depositAmountToBank, withdrawAmountToBank, fetchBankData } = contractFuncs()
+    const { program, createBank, depositAmountToBank, withdrawAmountFromBank, fetchBankData } = contractFuncs()
     const handleDepositChange = (e) => {
         setDepositAmount(e.target.value);
     }
@@ -25,16 +25,16 @@ const Herosection = () => {
 
     const handleDeposit = async (e) => {
         await depositAmountToBank(depositAmount)
-        console.log(depositAmount);
+        // console.log(depositAmount);
     }
     const handleWithdraw = async (e) => {
-        await withdrawAmountToBank(withdrawAmount)
-        console.log(withdrawAmount);
+        await withdrawAmountFromBank(withdrawAmount)
+        // console.log(withdrawAmount);
     }
     const handleBankName = async (e) => {
         // console.log("Program ======>>>>> " , program);
         await createBank(bankName);
-        console.log(bankName);
+        // console.log(bankName);
     }
     const handleFatchBankData = async () => {
         const { balance, name, owner } = await fetchBankData();
@@ -44,9 +44,9 @@ const Herosection = () => {
         setOwner(owner);
 
         setFlag(true)
-        console.log("Bank Balance in lamport ==  >>> ", balance);
-        console.log("Bank Name  ==  >?>> ", name);
-        console.log("Bank owner  ==  >?>> ", owner);
+        // console.log("Bank Balance in lamport ==  >>> ", balance);
+        // console.log("Bank Name  ==  >?>> ", name);
+        // console.log("Bank owner  ==  >?>> ", owner);
     }
 
 
