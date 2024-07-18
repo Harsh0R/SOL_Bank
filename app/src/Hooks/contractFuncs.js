@@ -17,7 +17,7 @@ import { findProgramAddressSync } from "@project-serum/anchor/dist/cjs/utils/pub
 import { utf8 } from "@project-serum/anchor/dist/cjs/utils/bytes";
 
 const contractFuncs = () => {
-  const [program, setProgram] = useState();
+  const [program, setProgram] = useState();     
   const { publicKey } = useWallet();
   const network = clusterApiUrl("devnet");
   const opts = {
